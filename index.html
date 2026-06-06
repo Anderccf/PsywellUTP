@@ -77,8 +77,9 @@
     .progress-bar-fill { transition: width 0.5s ease; }
 
     /* ====== BADGE ====== */
-    .badge-locked { filter: grayscale(1); opacity: 0.4; }
-    .badge-unlocked { filter: none; opacity: 1; transition: all 0.5s ease; }
+    .badge-locked { filter: grayscale(1); opacity: 0.4; cursor: pointer; transition: all 0.3s ease; }
+    .badge-locked:hover { opacity: 0.7; transform: scale(1.05); }
+    .badge-unlocked { filter: none; opacity: 1; transition: all 0.5s ease; cursor: default; }
 
     /* ====== MODAL ====== */
     .modal-backdrop { backdrop-filter: blur(4px); }
@@ -312,7 +313,7 @@
                 <div id="xp-bar" class="h-3 bg-gradient-to-r from-yellow-300 to-mint-300 rounded-full" style="width:0%"></div>
               </div>
             </div>
-            <p class="text-white/60 text-sm">175 XP para nivel <strong class="text-white">Guardián del Bienestar</strong></p>
+            <p class="text-white/60 text-sm">300 XP para nivel <strong class="text-white">Guardián Mental</strong></p>
           </div>
           <div class="mt-8 grid grid-cols-2 gap-4 text-center">
             <div class="bg-white/15 rounded-2xl p-4">
@@ -331,46 +332,46 @@
       <div class="lg:col-span-2 reveal">
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <!-- Badge 1 -->
-          <div id="badge1" class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm">
+          <div id="badge1" class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm" onclick="unlockBadge(1, 10)">
             <div class="text-4xl mb-2">🧘</div>
             <p class="font-semibold text-slate-700 text-sm">Primera Respiración</p>
             <p class="text-slate-400 text-xs mt-1">Completaste tu primer ejercicio</p>
             <span class="inline-block mt-2 text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-medium">+10 XP</span>
           </div>
           <!-- Badge 2 -->
-          <div id="badge2" class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm">
+          <div id="badge2" class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm" onclick="unlockBadge(2, 15)">
             <div class="text-4xl mb-2">📝</div>
             <p class="font-semibold text-slate-700 text-sm">Gratitud Diaria</p>
             <p class="text-slate-400 text-xs mt-1">Escribiste en tu diario</p>
             <span class="inline-block mt-2 text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-medium">+15 XP</span>
           </div>
           <!-- Badge 3 -->
-          <div id="badge3" class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm">
+          <div id="badge3" class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm" onclick="unlockBadge(3, 20)">
             <div class="text-4xl mb-2">🧪</div>
             <p class="font-semibold text-slate-700 text-sm">Test Completado</p>
             <p class="text-slate-400 text-xs mt-1">Hiciste el test SISCO</p>
-            <span class="inline-block mt-2 text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">🔒 Bloqueado</span>
+            <span class="inline-block mt-2 text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">+20 XP</span>
           </div>
           <!-- Badge 4 -->
-          <div id="badge4" class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm">
+          <div id="badge4" class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm" onclick="unlockBadge(4, 25)">
             <div class="text-4xl mb-2">🍅</div>
             <p class="font-semibold text-slate-700 text-sm">Maestro Pomodoro</p>
             <p class="text-slate-400 text-xs mt-1">Completa 5 sesiones</p>
-            <span class="inline-block mt-2 text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">🔒 Bloqueado</span>
+            <span class="inline-block mt-2 text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">+25 XP</span>
           </div>
           <!-- Badge 5 -->
-          <div id="badge5" class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm">
+          <div id="badge5" class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm" onclick="unlockBadge(5, 30)">
             <div class="text-4xl mb-2">🌟</div>
             <p class="font-semibold text-slate-700 text-sm">Racha de 7 días</p>
             <p class="text-slate-400 text-xs mt-1">7 días consecutivos</p>
-            <span class="inline-block mt-2 text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">🔒 Bloqueado</span>
+            <span class="inline-block mt-2 text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">+30 XP</span>
           </div>
           <!-- Badge 6 -->
-          <div id="badge6" class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm">
+          <div id="badge6" class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm" onclick="unlockBadge(6, 50)">
             <div class="text-4xl mb-2">🏆</div>
             <p class="font-semibold text-slate-700 text-sm">Guardián Mental</p>
             <p class="text-slate-400 text-xs mt-1">Nivel máximo</p>
-            <span class="inline-block mt-2 text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">🔒 Bloqueado</span>
+            <span class="inline-block mt-2 text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">+50 XP</span>
           </div>
         </div>
         <div class="mt-5 text-center">
@@ -401,6 +402,16 @@
 
 const USER_DATA_KEY = 'psywell_user_data';
 
+// Configuración de insignias con sus requisitos
+const BADGES_CONFIG = {
+  1: { name: 'Primera Respiración', xp: 10 },
+  2: { name: 'Gratitud Diaria', xp: 15 },
+  3: { name: 'Test Completado', xp: 20 },
+  4: { name: 'Maestro Pomodoro', xp: 25 },
+  5: { name: 'Racha de 7 días', xp: 30 },
+  6: { name: 'Guardián Mental', xp: 50 },
+};
+
 function loadUserData() {
   const stored = localStorage.getItem(USER_DATA_KEY);
   return stored ? JSON.parse(stored) : {
@@ -418,7 +429,7 @@ function saveUserData(data) {
 
 function getLevelName(xp) {
   if (xp < 300) return 'Explorador Mental';
-  if (xp < 600) return 'Guardián del Bienestar';
+  if (xp < 600) return 'Guardián Mental';
   if (xp < 1000) return 'Maestro del Bienestar';
   return 'Sabio del Bienestar';
 }
@@ -494,6 +505,19 @@ function addXP(amount, badgeId = null) {
 
 function gainXP() {
   addXP(10);
+}
+
+function unlockBadge(badgeId, xpReward) {
+  const userData = loadUserData();
+  
+  // Si ya está desbloqueado, no hacer nada
+  if (userData.unlockedBadges.includes(badgeId)) {
+    showToast('¡Este logro ya está desbloqueado! 🎊', '🔓');
+    return;
+  }
+  
+  // Desbloquear el badge
+  addXP(xpReward, badgeId);
 }
 
 // ============================================================
