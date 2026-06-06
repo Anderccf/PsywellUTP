@@ -159,10 +159,10 @@
   <div id="mobile-menu" class="md:hidden max-h-0 opacity-0 bg-white/95 rounded-2xl mt-3 mx-2 shadow-xl overflow-hidden">
     <ul class="flex flex-col py-4 px-4 gap-1 text-sm font-medium text-slate-700">
       <li><a href="#inicio"    onclick="closeMobile()" class="block px-4 py-3 rounded-xl hover:bg-indigo-50 transition"><i class="fa-solid fa-house mr-2 text-indigo-500"></i>Inicio</a></li>
-      <li><a href="#test"      onclick="closeMobile()" class="block px-4 py-3 rounded-xl hover:bg-indigo-50 transition"><i class="fa-solid fa-clipboard-list mr-2 text-indigo-500"></i>Test SISCO</a></li>
+      <li><a href="#test"      onclick="closeMobile()" class="block px-4 py-3 rounded-xl hover:bg-indigo-50 transition"><i class="fa-solid fa-clipboard-list mr-2 text-indigo-500"></i>Test SISCO</[...]
       <li><a href="#recursos"  onclick="closeMobile()" class="block px-4 py-3 rounded-xl hover:bg-indigo-50 transition"><i class="fa-solid fa-heart mr-2 text-indigo-500"></i>Recursos</a></li>
       <li><a href="#comunidad" onclick="closeMobile()" class="block px-4 py-3 rounded-xl hover:bg-indigo-50 transition"><i class="fa-solid fa-users mr-2 text-indigo-500"></i>Comunidad</a></li>
-      <li><a href="#nosotros"  onclick="closeMobile()" class="block px-4 py-3 rounded-xl hover:bg-indigo-50 transition"><i class="fa-solid fa-info-circle mr-2 text-indigo-500"></i>Sobre Nosotros</a></li>
+      <li><a href="#nosotros"  onclick="closeMobile()" class="block px-4 py-3 rounded-xl hover:bg-indigo-50 transition"><i class="fa-solid fa-info-circle mr-2 text-indigo-500"></i>Sobre Nosotros<[...]
     </ul>
   </div>
 </nav>
@@ -189,7 +189,7 @@
           importa.
         </h1>
         <p class="text-lg md:text-xl text-white/80 leading-relaxed mb-8 max-w-lg">
-          Bienestar psicológico para estudiantes y docentes de Psicología — <strong class="text-white">UTP</strong>. Gestiona el estrés académico con herramientas validadas y acompañamiento integral.
+          Bienestar psicológico para estudiantes y docentes de Psicología — <strong class="text-white">UTP</strong>. Gestiona el estrés académico con herramientas validadas y acompañamiento int[...]
         </p>
         <div class="flex flex-wrap gap-4">
           <a href="#test" class="pulse-btn inline-flex items-center gap-2 bg-white text-indigo-700 font-bold px-7 py-4 rounded-full shadow-2xl hover:bg-indigo-50 transition-all text-base">
@@ -229,27 +229,27 @@
               </div>
               <div>
                 <p class="text-white font-semibold text-sm">Nivel de Estrés</p>
-                <p class="text-white/60 text-xs">Hoy, 9:30 AM</p>
+                <p class="text-white/60 text-xs" id="card-time">Hoy, 9:30 AM</p>
               </div>
             </div>
             <div class="space-y-3 mb-6">
               <div>
                 <div class="flex justify-between text-white/70 text-xs mb-1">
-                  <span>Carga académica</span><span>62%</span>
+                  <span>Carga académica</span><span id="card-stress1">62%</span>
                 </div>
-                <div class="h-2 bg-white/20 rounded-full"><div class="h-2 bg-mint-300 rounded-full" style="width:62%"></div></div>
+                <div class="h-2 bg-white/20 rounded-full"><div class="h-2 bg-mint-300 rounded-full" id="card-bar1" style="width:62%"></div></div>
               </div>
               <div>
                 <div class="flex justify-between text-white/70 text-xs mb-1">
-                  <span>Ansiedad ante exámenes</span><span>48%</span>
+                  <span>Ansiedad ante exámenes</span><span id="card-stress2">48%</span>
                 </div>
-                <div class="h-2 bg-white/20 rounded-full"><div class="h-2 bg-indigo-300 rounded-full" style="width:48%"></div></div>
+                <div class="h-2 bg-white/20 rounded-full"><div class="h-2 bg-indigo-300 rounded-full" id="card-bar2" style="width:48%"></div></div>
               </div>
               <div>
                 <div class="flex justify-between text-white/70 text-xs mb-1">
-                  <span>Bienestar general</span><span>75%</span>
+                  <span>Bienestar general</span><span id="card-stress3">75%</span>
                 </div>
-                <div class="h-2 bg-white/20 rounded-full"><div class="h-2 bg-yellow-300 rounded-full" style="width:75%"></div></div>
+                <div class="h-2 bg-white/20 rounded-full"><div class="h-2 bg-yellow-300 rounded-full" id="card-bar3" style="width:75%"></div></div>
               </div>
             </div>
             <div class="bg-mint-400/20 border border-mint-300/30 rounded-2xl p-4 text-center">
@@ -497,6 +497,39 @@ function gainXP() {
 }
 
 // ============================================================
+// DYNAMIC STRESS CARD DATA - Se genera aleatoriamente cada vez
+// ============================================================
+function generateRandomStressData() {
+  const stress1 = Math.floor(Math.random() * 100) + 1;
+  const stress2 = Math.floor(Math.random() * 100) + 1;
+  const stress3 = Math.floor(Math.random() * 100) + 1;
+  
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  
+  return {
+    stress1,
+    stress2,
+    stress3,
+    time: `Hoy, ${hours}:${minutes}`,
+  };
+}
+
+function updateStressCard() {
+  const data = generateRandomStressData();
+  
+  document.getElementById('card-time').textContent = data.time;
+  document.getElementById('card-stress1').textContent = data.stress1 + '%';
+  document.getElementById('card-stress2').textContent = data.stress2 + '%';
+  document.getElementById('card-stress3').textContent = data.stress3 + '%';
+  
+  document.getElementById('card-bar1').style.width = data.stress1 + '%';
+  document.getElementById('card-bar2').style.width = data.stress2 + '%';
+  document.getElementById('card-bar3').style.width = data.stress3 + '%';
+}
+
+// ============================================================
 // TOAST
 // ============================================================
 function showToast(msg, icon = '✅') {
@@ -552,7 +585,11 @@ revealEls.forEach(el => observer.observe(el));
 // INITIALIZE
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
+  // Reset del localStorage (comentar esta línea después de la primera ejecución)
+  localStorage.removeItem(USER_DATA_KEY);
+  
   updateGamificationUI();
+  updateStressCard();
 });
 </script>
 </body>
