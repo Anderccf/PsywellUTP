@@ -1,0 +1,1594 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PsyWell UTP – Bienestar Psicológico Académico</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Google Fonts: Playfair Display + DM Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            indigo: { 50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc', 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 800: '#3730a3', 900: '#312e81' },
+            mint: { 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80', 500: '#22c55e', 600: '#16a34a' },
+            sage: { 100: '#e8f5e9', 200: '#c8e6c9', 300: '#a5d6a7', 400: '#81c784' },
+          },
+          fontFamily: {
+            display: ['Playfair Display', 'serif'],
+            body: ['DM Sans', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* ====== BASE ====== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: #f8fafc; color: #1e293b; }
+
+    /* ====== NAVBAR ====== */
+    #navbar { transition: background 0.4s, box-shadow 0.4s; }
+    #navbar.scrolled { background: rgba(255,255,255,0.97) !important; box-shadow: 0 4px 30px rgba(79,70,229,0.10); }
+
+    /* ====== HERO ====== */
+    .hero-bg {
+      background: linear-gradient(135deg, #312e81 0%, #4f46e5 40%, #6366f1 65%, #22c55e 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: 0.18;
+    }
+    .hero-blob-1 { width: 520px; height: 520px; background: #86efac; top: -120px; right: -100px; }
+    .hero-blob-2 { width: 380px; height: 380px; background: #a5b4fc; bottom: -80px; left: -60px; }
+    .hero-blob-3 { width: 260px; height: 260px; background: #f0fdf4; top: 40%; left: 38%; }
+
+    /* ====== CARDS ====== */
+    .resource-card { transition: transform 0.3s, box-shadow 0.3s; }
+    .resource-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(79,70,229,0.13); }
+
+    /* ====== BREATHING CIRCLE ====== */
+    @keyframes breatheIn  { 0%{transform:scale(1);opacity:.7} 100%{transform:scale(1.55);opacity:1} }
+    @keyframes breatheOut { 0%{transform:scale(1.55);opacity:1} 100%{transform:scale(1);opacity:.7} }
+    @keyframes breatheHold{ 0%,100%{transform:scale(1.55)} }
+    .breathe-in  { animation: breatheIn  4s ease-in-out forwards; }
+    .breathe-hold{ animation: breatheHold 7s linear forwards; }
+    .breathe-out { animation: breatheOut 8s ease-in-out forwards; }
+
+    /* ====== POMODORO ====== */
+    .pomodoro-ring { stroke-dasharray: 502; stroke-dashoffset: 502; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+
+    /* ====== PROGRESS BAR ====== */
+    .progress-bar-fill { transition: width 0.5s ease; }
+
+    /* ====== BADGE ====== */
+    .badge-locked { filter: grayscale(1); opacity: 0.4; }
+    .badge-unlocked { filter: none; opacity: 1; }
+
+    /* ====== MODAL ====== */
+    .modal-backdrop { backdrop-filter: blur(4px); }
+
+    /* ====== SCROLL REVEAL ====== */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ====== PULSE BUTTON ====== */
+    @keyframes pulse-ring { 0%{transform:scale(1);opacity:0.6} 100%{transform:scale(1.4);opacity:0} }
+    .pulse-btn::after { content:''; position:absolute; inset:0; border-radius:inherit; animation: pulse-ring 2s ease-out infinite; background: rgba(255,255,255,0.4); }
+    .pulse-btn { position: relative; overflow: visible; }
+
+    /* ====== NAV MOBILE ====== */
+    #mobile-menu { transition: max-height 0.4s ease, opacity 0.4s ease; overflow: hidden; }
+
+    /* ====== RESULTS COLOR ====== */
+    .result-low   { background: linear-gradient(135deg,#dcfce7,#bbf7d0); border-color: #22c55e; }
+    .result-mid   { background: linear-gradient(135deg,#fef9c3,#fde68a); border-color: #f59e0b; }
+    .result-high  { background: linear-gradient(135deg,#fee2e2,#fca5a5); border-color: #ef4444; }
+
+    /* ====== TOOLTIP ====== */
+    .tooltip-text { display: none; }
+    .has-tooltip:hover .tooltip-text { display: block; }
+
+    /* ====== SECTION DIVIDER ====== */
+    .wave-divider svg { display: block; }
+
+    /* ====== GRADIENT TEXT ====== */
+    .grad-text { background: linear-gradient(90deg,#4f46e5,#22c55e); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+    /* ====== JOURNAL TEXTAREA ====== */
+    textarea:focus { outline: 2px solid #6366f1; outline-offset: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- ================================================================
+     NAVBAR
+================================================================ -->
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 bg-transparent py-4 px-4 md:px-8" role="navigation" aria-label="Menú principal">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <!-- Logo -->
+    <a href="#inicio" class="flex items-center gap-2 group">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-mint-500 flex items-center justify-center shadow-lg group-hover:shadow-indigo-300 transition-shadow">
+        <i class="fa-solid fa-brain text-white text-lg"></i>
+      </div>
+      <span class="font-display text-xl font-bold text-white group-hover:text-indigo-200 transition-colors">PsyWell <span class="text-mint-300">UTP</span></span>
+    </a>
+
+    <!-- Desktop Nav -->
+    <ul class="hidden md:flex items-center gap-1 text-sm font-medium text-white/90">
+      <li><a href="#inicio"      class="px-3 py-2 rounded-lg hover:bg-white/10 transition">Inicio</a></li>
+      <li><a href="#test"        class="px-3 py-2 rounded-lg hover:bg-white/10 transition">Test SISCO</a></li>
+      <li><a href="#recursos"    class="px-3 py-2 rounded-lg hover:bg-white/10 transition">Recursos</a></li>
+      <li><a href="#comunidad"   class="px-3 py-2 rounded-lg hover:bg-white/10 transition">Comunidad</a></li>
+      <li><a href="#nosotros"    class="px-3 py-2 rounded-lg hover:bg-white/10 transition">Sobre Nosotros</a></li>
+      <li><a href="#test" class="ml-3 px-5 py-2 bg-white text-indigo-700 font-semibold rounded-full hover:bg-indigo-50 shadow-md hover:shadow-lg transition-all">Iniciar Test</a></li>
+    </ul>
+
+    <!-- Mobile Hamburger -->
+    <button id="hamburger" class="md:hidden text-white focus:outline-none" aria-label="Abrir menú">
+      <i class="fa-solid fa-bars text-2xl"></i>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="md:hidden max-h-0 opacity-0 bg-white/95 rounded-2xl mt-3 mx-2 shadow-xl overflow-hidden">
+    <ul class="flex flex-col py-4 px-4 gap-1 text-sm font-medium text-slate-700">
+      <li><a href="#inicio"    onclick="closeMobile()" class="block px-4 py-3 rounded-xl hover:bg-indigo-50 transition"><i class="fa-solid fa-house mr-2 text-indigo-500"></i>Inicio</a></li>
+      <li><a href="#test"      onclick="closeMobile()" class="block px-4 py-3 rounded-xl hover:bg-indigo-50 transition"><i class="fa-solid fa-clipboard-list mr-2 text-indigo-500"></i>Test SISCO</a></li>
+      <li><a href="#recursos"  onclick="closeMobile()" class="block px-4 py-3 rounded-xl hover:bg-indigo-50 transition"><i class="fa-solid fa-heart mr-2 text-indigo-500"></i>Recursos</a></li>
+      <li><a href="#comunidad" onclick="closeMobile()" class="block px-4 py-3 rounded-xl hover:bg-indigo-50 transition"><i class="fa-solid fa-users mr-2 text-indigo-500"></i>Comunidad</a></li>
+      <li><a href="#nosotros"  onclick="closeMobile()" class="block px-4 py-3 rounded-xl hover:bg-indigo-50 transition"><i class="fa-solid fa-info-circle mr-2 text-indigo-500"></i>Sobre Nosotros</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ================================================================
+     HERO SECTION
+================================================================ -->
+<section id="inicio" class="hero-bg min-h-screen flex items-center pt-20 pb-16">
+  <div class="hero-blob hero-blob-1"></div>
+  <div class="hero-blob hero-blob-2"></div>
+  <div class="hero-blob hero-blob-3"></div>
+
+  <div class="max-w-7xl mx-auto px-4 md:px-8 w-full">
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+      <!-- Text -->
+      <div class="text-white z-10">
+        <div class="inline-flex items-center gap-2 bg-white/15 border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium mb-6 backdrop-blur-sm">
+          <span class="w-2 h-2 bg-mint-300 rounded-full animate-ping inline-block"></span>
+          Proyecto Creatividad e Innovación · UTP 2025
+        </div>
+        <h1 class="font-display text-5xl md:text-6xl lg:text-7xl font-black leading-tight mb-6">
+          Tu bienestar<br/>
+          <span class="text-mint-300">mental</span><br/>
+          importa.
+        </h1>
+        <p class="text-lg md:text-xl text-white/80 leading-relaxed mb-8 max-w-lg">
+          Bienestar psicológico para estudiantes y docentes de Psicología — <strong class="text-white">UTP</strong>. Gestiona el estrés académico con herramientas validadas y acompañamiento integral.
+        </p>
+        <div class="flex flex-wrap gap-4">
+          <a href="#test" class="pulse-btn inline-flex items-center gap-2 bg-white text-indigo-700 font-bold px-7 py-4 rounded-full shadow-2xl hover:bg-indigo-50 transition-all text-base">
+            <i class="fa-solid fa-clipboard-list"></i> Hacer el Test SISCO
+          </a>
+          <a href="#recursos" class="inline-flex items-center gap-2 border-2 border-white/40 text-white font-semibold px-7 py-4 rounded-full hover:bg-white/10 transition-all text-base">
+            <i class="fa-solid fa-leaf"></i> Explorar Recursos
+          </a>
+        </div>
+        <!-- Stats -->
+        <div class="flex gap-8 mt-12">
+          <div>
+            <p class="font-display text-4xl font-bold text-mint-300">89%</p>
+            <p class="text-white/60 text-sm mt-1">reducción de estrés</p>
+          </div>
+          <div class="w-px bg-white/20"></div>
+          <div>
+            <p class="font-display text-4xl font-bold text-mint-300">500+</p>
+            <p class="text-white/60 text-sm mt-1">estudiantes UTP</p>
+          </div>
+          <div class="w-px bg-white/20"></div>
+          <div>
+            <p class="font-display text-4xl font-bold text-mint-300">SISCO</p>
+            <p class="text-white/60 text-sm mt-1">validado en Perú</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Illustration Card -->
+      <div class="z-10 hidden md:flex justify-center">
+        <div class="relative">
+          <!-- Main card -->
+          <div class="bg-white/15 backdrop-blur-lg border border-white/25 rounded-3xl p-8 shadow-2xl w-80">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-mint-400 to-indigo-400 flex items-center justify-center">
+                <i class="fa-solid fa-chart-line text-white text-xl"></i>
+              </div>
+              <div>
+                <p class="text-white font-semibold text-sm">Nivel de Estrés</p>
+                <p class="text-white/60 text-xs">Hoy, 9:30 AM</p>
+              </div>
+            </div>
+            <div class="space-y-3 mb-6">
+              <div>
+                <div class="flex justify-between text-white/70 text-xs mb-1">
+                  <span>Carga académica</span><span>62%</span>
+                </div>
+                <div class="h-2 bg-white/20 rounded-full"><div class="h-2 bg-mint-300 rounded-full" style="width:62%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-white/70 text-xs mb-1">
+                  <span>Ansiedad ante exámenes</span><span>48%</span>
+                </div>
+                <div class="h-2 bg-white/20 rounded-full"><div class="h-2 bg-indigo-300 rounded-full" style="width:48%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-white/70 text-xs mb-1">
+                  <span>Bienestar general</span><span>75%</span>
+                </div>
+                <div class="h-2 bg-white/20 rounded-full"><div class="h-2 bg-yellow-300 rounded-full" style="width:75%"></div></div>
+              </div>
+            </div>
+            <div class="bg-mint-400/20 border border-mint-300/30 rounded-2xl p-4 text-center">
+              <p class="text-white text-sm font-semibold">💚 "Eres más fuerte de lo que crees"</p>
+            </div>
+          </div>
+          <!-- Floating badge -->
+          <div class="absolute -top-5 -right-5 bg-yellow-400 text-yellow-900 font-bold text-xs px-3 py-2 rounded-full shadow-lg rotate-6">
+            🏆 +25 XP hoy
+          </div>
+          <!-- Floating notification -->
+          <div class="absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-xl px-4 py-3 flex items-center gap-2 text-sm font-medium text-slate-700">
+            <span class="text-2xl">🧘</span> Sesión de mindfulness lista
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wave bottom -->
+  <div class="wave-divider absolute bottom-0 left-0 right-0">
+    <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,40 C360,80 1080,0 1440,40 L1440,60 L0,60 Z" fill="#f8fafc"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ================================================================
+     TEST SISCO
+================================================================ -->
+<section id="test" class="py-24 bg-white">
+  <div class="max-w-4xl mx-auto px-4 md:px-8">
+    <!-- Header -->
+    <div class="text-center mb-12 reveal">
+      <span class="inline-block bg-indigo-100 text-indigo-700 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">Evaluación Validada</span>
+      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-800 mb-4">
+        Inventario <span class="grad-text">SISCO</span> de Estrés Académico
+      </h2>
+      <p class="text-slate-500 text-lg max-w-2xl mx-auto">
+        Cuestionario validado en Perú por Barraza Macías. Identifica tus fuentes de estrés y recibe orientación personalizada.
+      </p>
+    </div>
+
+    <!-- Test Container -->
+    <div id="test-container" class="bg-gradient-to-br from-indigo-50 to-mint-50 border border-indigo-100 rounded-3xl p-6 md:p-10 shadow-xl reveal">
+
+      <!-- Progress Bar -->
+      <div class="mb-8" id="progress-container">
+        <div class="flex justify-between text-sm text-slate-500 mb-2">
+          <span>Progreso</span>
+          <span id="progress-label">0 / 10</span>
+        </div>
+        <div class="h-3 bg-white rounded-full shadow-inner overflow-hidden">
+          <div id="progress-bar" class="progress-bar-fill h-3 bg-gradient-to-r from-indigo-500 to-mint-500 rounded-full" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- Questions Container -->
+      <div id="questions-container">
+        <!-- Intro Card -->
+        <div id="intro-card" class="text-center py-8">
+          <div class="w-20 h-20 bg-indigo-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
+            <i class="fa-solid fa-brain text-indigo-500 text-3xl"></i>
+          </div>
+          <h3 class="font-display text-2xl font-bold text-slate-800 mb-3">¿Listo para conocerte mejor?</h3>
+          <p class="text-slate-500 mb-2 max-w-md mx-auto">Este test consta de <strong>10 preguntas</strong> sobre tu experiencia de estrés académico. Responde con honestidad.</p>
+          <p class="text-xs text-slate-400 mb-8">Tiempo estimado: 3–5 minutos · Inventario SISCO validado en Perú</p>
+          <button onclick="startTest()" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all text-base">
+            <i class="fa-solid fa-play"></i> Comenzar Test
+          </button>
+        </div>
+      </div>
+
+      <!-- Result Container (hidden initially) -->
+      <div id="result-container" class="hidden"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     RESOURCES SECTION
+================================================================ -->
+<section id="recursos" class="py-24 bg-slate-50">
+  <div class="max-w-7xl mx-auto px-4 md:px-8">
+    <div class="text-center mb-14 reveal">
+      <span class="inline-block bg-mint-100 text-mint-700 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">Herramientas</span>
+      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-800 mb-4">
+        Recursos para tu <span class="grad-text">bienestar</span>
+      </h2>
+      <p class="text-slate-500 text-lg max-w-xl mx-auto">Técnicas basadas en evidencia para reducir el estrés y mejorar tu rendimiento académico.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <!-- Card 1: Respiración guiada -->
+      <div class="resource-card bg-white rounded-3xl p-7 shadow-md border border-slate-100 reveal">
+        <div class="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center mb-5">
+          <i class="fa-solid fa-wind text-blue-500 text-2xl"></i>
+        </div>
+        <h3 class="font-display text-xl font-bold text-slate-800 mb-2">Respiración Guiada</h3>
+        <p class="text-slate-500 text-sm mb-5">Técnica 4-7-8: inhala 4 segundos, retén 7, exhala 8. Activa el sistema nervioso parasimpático.</p>
+        <button onclick="openBreathing()" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-3 rounded-xl transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-play-circle"></i> Iniciar ejercicio
+        </button>
+      </div>
+
+      <!-- Card 2: Pomodoro -->
+      <div class="resource-card bg-white rounded-3xl p-7 shadow-md border border-slate-100 reveal">
+        <div class="w-14 h-14 rounded-2xl bg-red-100 flex items-center justify-center mb-5">
+          <i class="fa-solid fa-clock text-red-500 text-2xl"></i>
+        </div>
+        <h3 class="font-display text-xl font-bold text-slate-800 mb-2">Temporizador Pomodoro</h3>
+        <p class="text-slate-500 text-sm mb-5">25 minutos de enfoque seguidos de 5 de descanso. Mejora la productividad y reduce la fatiga mental.</p>
+        <button onclick="openPomodoro()" class="w-full bg-red-50 hover:bg-red-100 text-red-700 font-semibold py-3 rounded-xl transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-timer"></i> Abrir Pomodoro
+        </button>
+      </div>
+
+      <!-- Card 3: Diario de gratitud -->
+      <div class="resource-card bg-white rounded-3xl p-7 shadow-md border border-slate-100 reveal">
+        <div class="w-14 h-14 rounded-2xl bg-yellow-100 flex items-center justify-center mb-5">
+          <i class="fa-solid fa-book-open text-yellow-600 text-2xl"></i>
+        </div>
+        <h3 class="font-display text-xl font-bold text-slate-800 mb-2">Diario de Gratitud</h3>
+        <p class="text-slate-500 text-sm mb-5">Escribe 3 cosas por las que estás agradecido/a hoy. La gratitud recablea el cerebro hacia el bienestar.</p>
+        <button onclick="openJournal()" class="w-full bg-yellow-50 hover:bg-yellow-100 text-yellow-700 font-semibold py-3 rounded-xl transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-pen"></i> Escribir hoy
+        </button>
+      </div>
+
+      <!-- Card 4: Mindfulness -->
+      <div class="resource-card bg-white rounded-3xl p-7 shadow-md border border-slate-100 reveal">
+        <div class="w-14 h-14 rounded-2xl bg-purple-100 flex items-center justify-center mb-5">
+          <i class="fa-solid fa-spa text-purple-500 text-2xl"></i>
+        </div>
+        <h3 class="font-display text-xl font-bold text-slate-800 mb-2">Mindfulness</h3>
+        <p class="text-slate-500 text-sm mb-5">Técnica de atención plena al momento presente. Reduce la rumiación y aumenta el bienestar subjetivo.</p>
+        <button onclick="showTip('mindfulness')" class="w-full bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold py-3 rounded-xl transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-circle-info"></i> Ver técnica
+        </button>
+      </div>
+
+      <!-- Card 5: Relajación -->
+      <div class="resource-card bg-white rounded-3xl p-7 shadow-md border border-slate-100 reveal">
+        <div class="w-14 h-14 rounded-2xl bg-teal-100 flex items-center justify-center mb-5">
+          <i class="fa-solid fa-person-praying text-teal-500 text-2xl"></i>
+        </div>
+        <h3 class="font-display text-xl font-bold text-slate-800 mb-2">Técnicas de Relajación</h3>
+        <p class="text-slate-500 text-sm mb-5">Relajación muscular progresiva de Jacobson. Libera tensión física acumulada por el estrés crónico.</p>
+        <button onclick="showTip('relajacion')" class="w-full bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold py-3 rounded-xl transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-circle-info"></i> Ver técnica
+        </button>
+      </div>
+
+      <!-- Card 6: Organización académica -->
+      <div class="resource-card bg-white rounded-3xl p-7 shadow-md border border-slate-100 reveal">
+        <div class="w-14 h-14 rounded-2xl bg-indigo-100 flex items-center justify-center mb-5">
+          <i class="fa-solid fa-calendar-check text-indigo-500 text-2xl"></i>
+        </div>
+        <h3 class="font-display text-xl font-bold text-slate-800 mb-2">Organización Académica</h3>
+        <p class="text-slate-500 text-sm mb-5">Tips de planificación, gestión del tiempo y hábitos de estudio para reducir la carga percibida.</p>
+        <button onclick="showTip('organizacion')" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold py-3 rounded-xl transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-circle-info"></i> Ver tips
+        </button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     GAMIFICATION / ACHIEVEMENTS
+================================================================ -->
+<section id="comunidad" class="py-24 bg-white">
+  <div class="max-w-7xl mx-auto px-4 md:px-8">
+    <div class="text-center mb-14 reveal">
+      <span class="inline-block bg-yellow-100 text-yellow-700 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">Gamificación</span>
+      <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-800 mb-4">
+        Tus <span class="grad-text">Logros</span>
+      </h2>
+      <p class="text-slate-500 text-lg max-w-xl mx-auto">Cada acción cuenta. Desbloquea insignias y gana puntos de bienestar mientras cuidas tu salud mental.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- XP Panel -->
+      <div class="lg:col-span-1 reveal">
+        <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-3xl p-8 text-white shadow-2xl h-full flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
+                <i class="fa-solid fa-star text-yellow-300 text-2xl"></i>
+              </div>
+              <div>
+                <p class="text-white/70 text-sm">Tu nivel</p>
+                <p class="font-display text-2xl font-bold">Explorador Mental</p>
+              </div>
+            </div>
+            <div class="mb-4">
+              <div class="flex justify-between text-sm text-white/70 mb-2">
+                <span>Puntos XP</span><span id="xp-val">125 / 300</span>
+              </div>
+              <div class="h-3 bg-white/20 rounded-full overflow-hidden">
+                <div id="xp-bar" class="h-3 bg-gradient-to-r from-yellow-300 to-mint-300 rounded-full" style="width:42%"></div>
+              </div>
+            </div>
+            <p class="text-white/60 text-sm">175 XP para nivel <strong class="text-white">Guardián del Bienestar</strong></p>
+          </div>
+          <div class="mt-8 grid grid-cols-2 gap-4 text-center">
+            <div class="bg-white/15 rounded-2xl p-4">
+              <p class="font-display text-3xl font-bold text-yellow-300" id="racha">3</p>
+              <p class="text-white/70 text-xs mt-1">días de racha 🔥</p>
+            </div>
+            <div class="bg-white/15 rounded-2xl p-4">
+              <p class="font-display text-3xl font-bold text-mint-300">5</p>
+              <p class="text-white/70 text-xs mt-1">logros</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Badges Grid -->
+      <div class="lg:col-span-2 reveal">
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <!-- Badge 1 -->
+          <div class="bg-slate-50 border-2 border-yellow-300 badge-unlocked rounded-2xl p-5 text-center shadow-sm">
+            <div class="text-4xl mb-2">🧘</div>
+            <p class="font-semibold text-slate-700 text-sm">Primera Respiración</p>
+            <p class="text-slate-400 text-xs mt-1">Completaste tu primer ejercicio</p>
+            <span class="inline-block mt-2 text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-medium">+10 XP</span>
+          </div>
+          <!-- Badge 2 -->
+          <div class="bg-slate-50 border-2 border-indigo-300 badge-unlocked rounded-2xl p-5 text-center shadow-sm">
+            <div class="text-4xl mb-2">📝</div>
+            <p class="font-semibold text-slate-700 text-sm">Gratitud Diaria</p>
+            <p class="text-slate-400 text-xs mt-1">Escribiste en tu diario</p>
+            <span class="inline-block mt-2 text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-medium">+15 XP</span>
+          </div>
+          <!-- Badge 3 -->
+          <div class="bg-slate-50 border-2 border-mint-400 badge-unlocked rounded-2xl p-5 text-center shadow-sm">
+            <div class="text-4xl mb-2">🧪</div>
+            <p class="font-semibold text-slate-700 text-sm">Test Completado</p>
+            <p class="text-slate-400 text-xs mt-1">Hiciste el test SISCO</p>
+            <span class="inline-block mt-2 text-xs bg-mint-100 text-mint-700 px-2 py-0.5 rounded-full font-medium">+25 XP</span>
+          </div>
+          <!-- Badge 4 - locked -->
+          <div class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm">
+            <div class="text-4xl mb-2">🍅</div>
+            <p class="font-semibold text-slate-700 text-sm">Maestro Pomodoro</p>
+            <p class="text-slate-400 text-xs mt-1">Completa 5 sesiones</p>
+            <span class="inline-block mt-2 text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">🔒 Bloqueado</span>
+          </div>
+          <!-- Badge 5 - locked -->
+          <div class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm">
+            <div class="text-4xl mb-2">🌟</div>
+            <p class="font-semibold text-slate-700 text-sm">Racha de 7 días</p>
+            <p class="text-slate-400 text-xs mt-1">7 días consecutivos</p>
+            <span class="inline-block mt-2 text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">🔒 Bloqueado</span>
+          </div>
+          <!-- Badge 6 - locked -->
+          <div class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm">
+            <div class="text-4xl mb-2">🏆</div>
+            <p class="font-semibold text-slate-700 text-sm">Guardián Mental</p>
+            <p class="text-slate-400 text-xs mt-1">Nivel máximo</p>
+            <span class="inline-block mt-2 text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">🔒 Bloqueado</span>
+          </div>
+        </div>
+        <div class="mt-5 text-center">
+          <button onclick="gainXP()" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition shadow-md">
+            <i class="fa-solid fa-bolt"></i> Registrar actividad (+10 XP)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SOBRE NOSOTROS
+================================================================ -->
+<section id="nosotros" class="py-24 bg-gradient-to-br from-indigo-900 to-indigo-700 text-white">
+  <div class="max-w-7xl mx-auto px-4 md:px-8">
+    <div class="text-center mb-14 reveal">
+      <span class="inline-block bg-white/15 border border-white/20 text-white text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">El proyecto</span>
+      <h2 class="font-display text-4xl md:text-5xl font-bold mb-4">Sobre <span class="text-mint-300">PsyWell UTP</span></h2>
+      <p class="text-white/70 text-lg max-w-2xl mx-auto">Nació como una iniciativa estudiantil para atender el estrés académico en la carrera de Psicología de la UTP.</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8 mb-16">
+      <div class="bg-white/10 border border-white/15 rounded-3xl p-8 reveal">
+        <i class="fa-solid fa-lightbulb text-yellow-300 text-3xl mb-4"></i>
+        <h3 class="font-display text-xl font-bold mb-3">Misión</h3>
+        <p class="text-white/70 text-sm leading-relaxed">Proveer herramientas digitales accesibles, basadas en evidencia científica, para que estudiantes y docentes de Psicología UTP gestionen el estrés académico de forma efectiva.</p>
+      </div>
+      <div class="bg-white/10 border border-white/15 rounded-3xl p-8 reveal">
+        <i class="fa-solid fa-eye text-mint-300 text-3xl mb-4"></i>
+        <h3 class="font-display text-xl font-bold mb-3">Visión</h3>
+        <p class="text-white/70 text-sm leading-relaxed">Ser la plataforma de referencia en bienestar psicológico universitario en el Perú, contribuyendo a una comunidad académica más saludable y resiliente.</p>
+      </div>
+      <div class="bg-white/10 border border-white/15 rounded-3xl p-8 reveal">
+        <i class="fa-solid fa-flask text-indigo-300 text-3xl mb-4"></i>
+        <h3 class="font-display text-xl font-bold mb-3">Base Científica</h3>
+        <p class="text-white/70 text-sm leading-relaxed">Utilizamos el Inventario SISCO de Estrés Académico validado en Perú por Barraza Macías (2007), junto con técnicas de mindfulness y TCC.</p>
+      </div>
+    </div>
+
+    <!-- Team -->
+    <div class="text-center reveal">
+      <p class="text-white/60 text-sm mb-8 uppercase tracking-widest font-medium">Equipo del Proyecto · Creatividad e Innovación</p>
+      <div class="flex flex-wrap justify-center gap-6">
+        <div class="flex flex-col items-center gap-2">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-400 to-mint-400 flex items-center justify-center text-2xl shadow-lg">👩‍🎓</div>
+          <p class="text-white text-sm font-medium">Estudiantes</p>
+          <p class="text-white/50 text-xs">Psicología UTP</p>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-400 to-red-400 flex items-center justify-center text-2xl shadow-lg">👨‍🏫</div>
+          <p class="text-white text-sm font-medium">Docente Guía</p>
+          <p class="text-white/50 text-xs">UTP 2025</p>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center text-2xl shadow-lg">🏛️</div>
+          <p class="text-white text-sm font-medium">Universidad</p>
+          <p class="text-white/50 text-xs">Tecnológica del Perú</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     FOOTER
+================================================================ -->
+<footer class="bg-slate-900 text-white py-16">
+  <div class="max-w-7xl mx-auto px-4 md:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+      <div class="md:col-span-2">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-mint-500 flex items-center justify-center">
+            <i class="fa-solid fa-brain text-white"></i>
+          </div>
+          <span class="font-display text-2xl font-bold">PsyWell <span class="text-mint-400">UTP</span></span>
+        </div>
+        <p class="text-slate-400 text-sm leading-relaxed max-w-xs">Bienestar psicológico para estudiantes y docentes de Psicología — Universidad Tecnológica del Perú.</p>
+        <p class="text-slate-600 text-xs mt-4">Proyecto del curso de Creatividad e Innovación · UTP 2025</p>
+      </div>
+      <div>
+        <h4 class="font-semibold text-white mb-4 text-sm uppercase tracking-widest">Secciones</h4>
+        <ul class="space-y-2 text-slate-400 text-sm">
+          <li><a href="#inicio"    class="hover:text-white transition">Inicio</a></li>
+          <li><a href="#test"      class="hover:text-white transition">Test SISCO</a></li>
+          <li><a href="#recursos"  class="hover:text-white transition">Recursos</a></li>
+          <li><a href="#comunidad" class="hover:text-white transition">Logros</a></li>
+          <li><a href="#nosotros"  class="hover:text-white transition">Sobre Nosotros</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold text-white mb-4 text-sm uppercase tracking-widest">Recursos</h4>
+        <ul class="space-y-2 text-slate-400 text-sm">
+          <li><a href="#" class="hover:text-white transition">Línea 113 – Salud Mental</a></li>
+          <li><a href="#" class="hover:text-white transition">INSM Honorio Delgado</a></li>
+          <li><a href="#" class="hover:text-white transition">SISEVE</a></li>
+          <li><a href="#" class="hover:text-white transition">Bienestar UTP</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-slate-800 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-slate-600 text-xs">
+      <p>© 2025 PsyWell UTP · Todos los derechos reservados · Inventario SISCO: Barraza Macías (2007)</p>
+      <p>Hecho con <i class="fa-solid fa-heart text-red-500"></i> para la salud mental universitaria</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ================================================================
+     MODALS
+================================================================ -->
+
+<!-- BREATHING MODAL -->
+<div id="modal-breathing" class="hidden fixed inset-0 z-[100] flex items-center justify-center modal-backdrop bg-black/60 p-4">
+  <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 text-center relative">
+    <button onclick="closeModal('modal-breathing')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <div class="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+      <i class="fa-solid fa-wind text-blue-500 text-2xl"></i>
+    </div>
+    <h3 class="font-display text-2xl font-bold text-slate-800 mb-1">Técnica 4-7-8</h3>
+    <p class="text-slate-500 text-sm mb-8">Activa tu sistema nervioso parasimpático</p>
+
+    <!-- Breathing circle -->
+    <div class="relative flex items-center justify-center mb-6" style="height:180px">
+      <div id="breath-circle" class="absolute w-32 h-32 bg-blue-100 rounded-full flex items-center justify-center shadow-lg">
+        <div class="w-24 h-24 bg-blue-200 rounded-full flex items-center justify-center">
+          <div class="w-16 h-16 bg-blue-400 rounded-full flex items-center justify-center">
+            <i class="fa-solid fa-lungs text-white text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p id="breath-label" class="text-2xl font-display font-bold text-slate-700 mb-1">—</p>
+    <p id="breath-timer-label" class="text-slate-400 text-sm mb-6">Presiona iniciar</p>
+    <p id="breath-cycle" class="text-xs text-slate-400 mb-6">Ciclo <span id="breath-cycle-num">0</span> / 4</p>
+    <button id="btn-breath" onclick="startBreathing()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-xl transition">
+      Iniciar
+    </button>
+    <p class="text-xs text-slate-400 mt-4">4 ciclos completos · ~2 minutos</p>
+  </div>
+</div>
+
+<!-- POMODORO MODAL -->
+<div id="modal-pomodoro" class="hidden fixed inset-0 z-[100] flex items-center justify-center modal-backdrop bg-black/60 p-4">
+  <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 text-center relative">
+    <button onclick="closeModal('modal-pomodoro')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <div class="w-14 h-14 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+      <i class="fa-solid fa-clock text-red-500 text-2xl"></i>
+    </div>
+    <h3 class="font-display text-2xl font-bold text-slate-800 mb-1">Pomodoro</h3>
+    <p class="text-slate-500 text-sm mb-2" id="pomo-mode-label">25 min enfoque</p>
+    <p class="text-xs text-slate-400 mb-6">Sesión <span id="pomo-session">1</span>/4</p>
+
+    <!-- SVG Ring -->
+    <div class="relative flex items-center justify-center mb-6" style="height:180px">
+      <svg width="160" height="160" class="absolute -rotate-90">
+        <circle cx="80" cy="80" r="70" stroke="#fee2e2" stroke-width="10" fill="none"/>
+        <circle id="pomo-ring" cx="80" cy="80" r="70" stroke="#ef4444" stroke-width="10" fill="none" class="pomodoro-ring"/>
+      </svg>
+      <div class="text-center z-10">
+        <p id="pomo-time" class="font-display text-5xl font-bold text-slate-800">25:00</p>
+        <p class="text-slate-400 text-xs mt-1">minutos</p>
+      </div>
+    </div>
+
+    <div class="flex gap-3 mb-4">
+      <button id="btn-pomo-start" onclick="togglePomodoro()" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition">
+        <i class="fa-solid fa-play mr-1"></i> Iniciar
+      </button>
+      <button onclick="resetPomodoro()" class="px-5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 rounded-xl transition">
+        <i class="fa-solid fa-rotate-right"></i>
+      </button>
+    </div>
+    <p class="text-xs text-slate-400">Después de 4 pomodoros, toma un descanso largo de 15 min</p>
+  </div>
+</div>
+
+<!-- JOURNAL MODAL -->
+<div id="modal-journal" class="hidden fixed inset-0 z-[100] flex items-center justify-center modal-backdrop bg-black/60 p-4">
+  <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 relative">
+    <button onclick="closeModal('modal-journal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-12 h-12 bg-yellow-100 rounded-2xl flex items-center justify-center">
+        <i class="fa-solid fa-book-open text-yellow-600 text-xl"></i>
+      </div>
+      <div>
+        <h3 class="font-display text-xl font-bold text-slate-800">Diario de Gratitud</h3>
+        <p class="text-slate-400 text-sm" id="journal-date"></p>
+      </div>
+    </div>
+    <p class="text-slate-600 text-sm mb-4 bg-yellow-50 border border-yellow-200 rounded-xl p-4 italic">
+      "La gratitud convierte lo que tenemos en suficiente." — Anónimo
+    </p>
+    <div class="space-y-4 mb-6">
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1">1. Hoy me siento agradecido/a por...</label>
+        <textarea id="journal-1" class="w-full border border-slate-200 rounded-xl p-3 text-sm text-slate-700 resize-none focus:ring-2 focus:ring-yellow-300 outline-none" rows="2" placeholder="Escribe algo..."></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1">2. Una persona que me apoya es...</label>
+        <textarea id="journal-2" class="w-full border border-slate-200 rounded-xl p-3 text-sm text-slate-700 resize-none focus:ring-2 focus:ring-yellow-300 outline-none" rows="2" placeholder="Escribe algo..."></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1">3. Un pequeño logro de hoy fue...</label>
+        <textarea id="journal-3" class="w-full border border-slate-200 rounded-xl p-3 text-sm text-slate-700 resize-none focus:ring-2 focus:ring-yellow-300 outline-none" rows="2" placeholder="Escribe algo..."></textarea>
+      </div>
+    </div>
+    <button onclick="saveJournal()" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
+      <i class="fa-solid fa-floppy-disk"></i> Guardar entrada
+    </button>
+  </div>
+</div>
+
+<!-- TIP MODAL -->
+<div id="modal-tip" class="hidden fixed inset-0 z-[100] flex items-center justify-center modal-backdrop bg-black/60 p-4">
+  <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 relative">
+    <button onclick="closeModal('modal-tip')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <div id="tip-content"></div>
+  </div>
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div id="toast" class="hidden fixed bottom-6 right-6 z-[200] bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-medium max-w-xs">
+  <span id="toast-icon"></span>
+  <span id="toast-msg"></span>
+</div>
+
+<!-- ================================================================
+     JAVASCRIPT
+================================================================ -->
+<script>
+// ============================================================
+// NAVBAR SCROLL
+// ============================================================
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ============================================================
+// MOBILE MENU
+// ============================================================
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobile-menu');
+let menuOpen = false;
+hamburger.addEventListener('click', () => {
+  menuOpen = !menuOpen;
+  if (menuOpen) {
+    mobileMenu.style.maxHeight = '400px';
+    mobileMenu.style.opacity = '1';
+    hamburger.innerHTML = '<i class="fa-solid fa-xmark text-2xl"></i>';
+  } else {
+    closeMobile();
+  }
+});
+function closeMobile() {
+  menuOpen = false;
+  mobileMenu.style.maxHeight = '0';
+  mobileMenu.style.opacity = '0';
+  hamburger.innerHTML = '<i class="fa-solid fa-bars text-2xl"></i>';
+}
+
+// ============================================================
+// SCROLL REVEAL
+// ============================================================
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.12 });
+revealEls.forEach(el => observer.observe(el));
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg, icon = '✅') {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  document.getElementById('toast-icon').textContent = icon;
+  t.classList.remove('hidden');
+  setTimeout(() => t.classList.add('hidden'), 3500);
+}
+
+// ============================================================
+// MODAL UTILS
+// ============================================================
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+document.querySelectorAll('[id^="modal-"]').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.add('hidden'); });
+});
+
+// ============================================================
+// INVENTARIO SISCO SV-21 — DATOS REALES (Barraza Macías, 2018)
+// Estructura: 2 ítems previos + 7 estresores + 7 síntomas + 7 estrategias = 23 ítems
+// Escala Likert 6 valores: 0=Nunca, 1=Casi nunca, 2=Rara vez, 3=Algunas veces, 4=Casi siempre, 5=Siempre
+// Baremo indicativo: 0-33% Leve | 34-66% Moderado | 67-100% Severo
+// ============================================================
+
+// Escala de respuesta para los 21 ítems (secciones 3, 4 y 5)
+const scaleLabels6 = [
+  { val: 0, label: "Nunca",        abbr: "N"  },
+  { val: 1, label: "Casi nunca",   abbr: "CN" },
+  { val: 2, label: "Rara vez",     abbr: "RV" },
+  { val: 3, label: "Algunas veces",abbr: "AV" },
+  { val: 4, label: "Casi siempre", abbr: "CS" },
+  { val: 5, label: "Siempre",      abbr: "S"  },
+];
+
+// Escala de intensidad (ítem 2) — 1 al 5
+const scaleIntensidad = [1,2,3,4,5];
+
+// ---- DIMENSIÓN 1: ESTRESORES (7 ítems) ----
+const estresores = [
+  "La sobrecarga de tareas y trabajos escolares que tengo que realizar todos los días.",
+  "La personalidad y el carácter de los/as profesores/as que me imparten clases.",
+  "La forma de evaluación de mis profesores/as (a través de ensayos, trabajos de investigación, búsquedas en Internet, etc.).",
+  "El nivel de exigencia de mis profesores/as.",
+  "El tipo de trabajo que me piden los profesores (consulta de temas, fichas de trabajo, ensayos, mapas conceptuales, etc.).",
+  "Tener tiempo limitado para hacer el trabajo que me encargan los/as profesores/as.",
+  "La poca claridad que tengo sobre lo que quieren los/as profesores/as.",
+];
+
+// ---- DIMENSIÓN 2: SÍNTOMAS (7 ítems) ----
+const sintomas = [
+  "Fatiga crónica (cansancio permanente).",
+  "Sentimientos de depresión y tristeza (decaído/a).",
+  "Ansiedad, angustia o desesperación.",
+  "Problemas de concentración.",
+  "Sentimiento de agresividad o aumento de irritabilidad.",
+  "Conflictos o tendencia a polemizar o discutir.",
+  "Desgano para realizar las labores escolares.",
+];
+
+// ---- DIMENSIÓN 3: ESTRATEGIAS DE AFRONTAMIENTO (7 ítems) ----
+const estrategias = [
+  "Concentrarse en resolver la situación que me preocupa.",
+  "Establecer soluciones concretas para resolver la situación que me preocupa.",
+  "Analizar lo positivo y negativo de las soluciones pensadas para solucionar la situación que me preocupa.",
+  "Mantener el control sobre mis emociones para que no me afecte lo que me estresa.",
+  "Recordar situaciones similares ocurridas anteriormente y pensar en cómo las solucioné.",
+  "Elaboración de un plan para enfrentar lo que me estresa y ejecución de sus tareas.",
+  "Fijarse o tratar de obtener lo positivo de la situación que preocupa.",
+];
+
+// Estado del test
+let testPhase    = 'intro';   // 'intro' | 'filtro' | 'intensidad' | 'estresores' | 'sintomas' | 'estrategias' | 'result'
+let currentQ     = 0;
+let intensidad   = 0;
+let answersE     = [];  // estresores
+let answersS     = [];  // síntomas
+let answersA     = [];  // estrategias afrontamiento
+
+// Total de ítems = 7 + 7 + 7 = 21
+const TOTAL_ITEMS = 21;
+
+// ---- Helper: número de ítem global para la barra de progreso ----
+function globalItemNum() {
+  if (testPhase === 'estresores')  return currentQ;
+  if (testPhase === 'sintomas')    return 7 + currentQ;
+  if (testPhase === 'estrategias') return 14 + currentQ;
+  return 0;
+}
+
+// ---- Etiquetas de dimensión ----
+const dimensionLabels = {
+  estresores:  { label: 'Estresores', color: 'indigo', icon: 'fa-bolt', instruction: '¿Con qué frecuencia te estresa cada una de estas situaciones?' },
+  sintomas:    { label: 'Síntomas',   color: 'red',    icon: 'fa-heart-pulse', instruction: '¿Con qué frecuencia se te presentan las siguientes reacciones cuando estás estresado/a?' },
+  estrategias: { label: 'Afrontamiento', color: 'mint', icon: 'fa-shield-halved', instruction: '¿Con qué frecuencia utilizas cada una de estas acciones para enfrentar tu estrés?' },
+};
+
+// ============================================================
+// FLUJO PRINCIPAL DEL TEST
+// ============================================================
+
+function startTest() {
+  document.getElementById('intro-card').style.display = 'none';
+  document.getElementById('progress-container').classList.remove('hidden');
+  testPhase = 'filtro';
+  renderFiltro();
+}
+
+// PASO 1: Ítem filtro (¿Has tenido estrés este semestre?)
+function renderFiltro() {
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('progress-label').textContent = 'Ítem 1 de 23';
+  const container = document.getElementById('questions-container');
+  container.innerHTML = `
+    <div>
+      <div class="inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1.5 rounded-full mb-5 uppercase tracking-widest">
+        <i class="fa-solid fa-filter"></i> Ítem de Filtro
+      </div>
+      <p class="font-display text-xl md:text-2xl font-bold text-slate-800 mb-2 leading-snug">
+        Durante el transcurso de este semestre, ¿has tenido momentos de preocupación o nerviosismo (estrés)?
+      </p>
+      <p class="text-slate-400 text-sm mb-8">Responde con total honestidad. Si respondes "No", el cuestionario concluye aquí.</p>
+      <div class="grid grid-cols-2 gap-4">
+        <button onclick="answerFiltro(true)"
+          class="flex flex-col items-center justify-center gap-2 p-6 bg-white border-2 border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 rounded-2xl transition group">
+          <span class="text-3xl">😓</span>
+          <span class="font-bold text-slate-700 group-hover:text-indigo-700 text-lg">Sí</span>
+          <span class="text-slate-400 text-xs">He tenido momentos de estrés</span>
+        </button>
+        <button onclick="answerFiltro(false)"
+          class="flex flex-col items-center justify-center gap-2 p-6 bg-white border-2 border-slate-200 hover:border-mint-500 hover:bg-mint-50 rounded-2xl transition group">
+          <span class="text-3xl">😊</span>
+          <span class="font-bold text-slate-700 group-hover:text-green-700 text-lg">No</span>
+          <span class="text-slate-400 text-xs">No he tenido estrés</span>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function answerFiltro(haStress) {
+  if (!haStress) {
+    // Sin estrés: resultado directo especial
+    document.getElementById('progress-bar').style.width = '100%';
+    document.getElementById('progress-label').textContent = 'Completado';
+    showResultNoStress();
+    return;
+  }
+  testPhase = 'intensidad';
+  renderIntensidad();
+}
+
+// PASO 2: Ítem 2 — Nivel de intensidad del estrés (1-5)
+function renderIntensidad() {
+  document.getElementById('progress-bar').style.width = '4%';
+  document.getElementById('progress-label').textContent = 'Ítem 2 de 23';
+  const container = document.getElementById('questions-container');
+  container.innerHTML = `
+    <div>
+      <div class="inline-flex items-center gap-2 bg-yellow-100 text-yellow-700 text-xs font-bold px-3 py-1.5 rounded-full mb-5 uppercase tracking-widest">
+        <i class="fa-solid fa-gauge-high"></i> Intensidad del Estrés
+      </div>
+      <p class="font-display text-xl md:text-2xl font-bold text-slate-800 mb-2 leading-snug">
+        Con la idea de obtener mayor precisión, señala tu nivel de estrés en una escala del 1 al 5.
+      </p>
+      <p class="text-slate-400 text-sm mb-8">Donde <strong>1 = poco estrés</strong> y <strong>5 = mucho estrés</strong>.</p>
+      <div class="grid grid-cols-5 gap-3 mb-4">
+        ${[1,2,3,4,5].map(v => `
+          <button onclick="answerIntensidad(${v})"
+            class="flex flex-col items-center gap-2 py-5 bg-white border-2 border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 rounded-2xl transition group">
+            <span class="font-display font-black text-3xl text-slate-700 group-hover:text-indigo-700">${v}</span>
+            <span class="text-xs text-slate-400">${v===1?'Poco':v===5?'Mucho':''}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="flex justify-between text-xs text-slate-400 px-2">
+        <span>← Poco estrés</span><span>Mucho estrés →</span>
+      </div>
+    </div>
+  `;
+}
+
+function answerIntensidad(val) {
+  intensidad = val;
+  testPhase = 'estresores';
+  currentQ = 0;
+  answersE = [];
+  renderDimensionIntro('estresores');
+}
+
+// INTRO DE DIMENSIÓN
+function renderDimensionIntro(dim) {
+  const d = dimensionLabels[dim];
+  const totalDim = dim === 'estresores' ? 7 : dim === 'sintomas' ? 7 : 7;
+  const dimNum = dim === 'estresores' ? 1 : dim === 'sintomas' ? 2 : 3;
+  const container = document.getElementById('questions-container');
+  container.innerHTML = `
+    <div class="text-center py-6">
+      <div class="w-16 h-16 rounded-2xl bg-${d.color === 'mint' ? 'green' : d.color}-100 flex items-center justify-center mx-auto mb-4">
+        <i class="fa-solid ${d.icon} text-${d.color === 'mint' ? 'green' : d.color}-500 text-2xl"></i>
+      </div>
+      <div class="inline-block bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-widest">Sección ${dimNum} de 3</div>
+      <h3 class="font-display text-2xl font-bold text-slate-800 mb-2">${d.label}</h3>
+      <p class="text-slate-500 text-sm mb-6 max-w-sm mx-auto">${d.instruction}</p>
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-6 text-left">
+        <p class="text-xs font-bold text-slate-500 mb-3 uppercase tracking-wide">Escala de respuesta:</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          ${scaleLabels6.map(s => `
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center">${s.val}</span>
+              <span class="text-slate-600 text-xs">${s.label}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <button onclick="startDimension('${dim}')" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-2xl shadow transition">
+        <i class="fa-solid fa-play"></i> Comenzar sección
+      </button>
+    </div>
+  `;
+}
+
+function startDimension(dim) {
+  testPhase = dim;
+  currentQ = 0;
+  renderItemDimension();
+}
+
+// ÍTEM INDIVIDUAL DE DIMENSIÓN
+function renderItemDimension() {
+  const dim = testPhase;
+  const items = dim === 'estresores' ? estresores : dim === 'sintomas' ? sintomas : estrategias;
+  const d = dimensionLabels[dim];
+  const gNum = globalItemNum();
+  const pct = ((2 + gNum) / 23) * 100;
+
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `Ítem ${2 + gNum + 1} de 23`;
+
+  const dimNum = dim === 'estresores' ? 1 : dim === 'sintomas' ? 2 : 3;
+  const colorBg  = dim === 'estresores' ? 'indigo' : dim === 'sintomas' ? 'red' : 'green';
+
+  const container = document.getElementById('questions-container');
+  container.innerHTML = `
+    <div>
+      <div class="flex items-center justify-between mb-4">
+        <div class="inline-flex items-center gap-2 bg-${colorBg}-100 text-${colorBg}-700 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-widest">
+          <i class="fa-solid ${d.icon}"></i> ${d.label} · ${currentQ + 1}/7
+        </div>
+        <span class="text-xs text-slate-400">Sección ${dimNum}/3</span>
+      </div>
+      <p class="text-slate-500 text-sm italic mb-3">${d.instruction}</p>
+      <p class="font-display text-lg md:text-xl font-bold text-slate-800 mb-6 leading-snug">
+        ${items[currentQ]}
+      </p>
+      <div class="grid grid-cols-1 gap-2">
+        ${scaleLabels6.map(s => `
+          <button onclick="answerItem(${s.val})"
+            class="flex items-center gap-4 px-4 py-3 bg-white border-2 border-slate-200 hover:border-${colorBg}-400 hover:bg-${colorBg}-50 rounded-2xl transition text-left group">
+            <span class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 bg-slate-100 text-slate-600 group-hover:bg-${colorBg}-100 group-hover:text-${colorBg}-700 transition">${s.val}</span>
+            <span class="font-medium text-slate-700 group-hover:text-${colorBg}-800 transition">${s.label}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function answerItem(val) {
+  const dim = testPhase;
+  if (dim === 'estresores')  answersE.push(val);
+  if (dim === 'sintomas')    answersS.push(val);
+  if (dim === 'estrategias') answersA.push(val);
+
+  currentQ++;
+
+  const items = dim === 'estresores' ? estresores : dim === 'sintomas' ? sintomas : estrategias;
+
+  if (currentQ < items.length) {
+    renderItemDimension();
+    return;
+  }
+
+  // Pasar a la siguiente dimensión o mostrar resultado
+  if (dim === 'estresores') {
+    testPhase = 'sintomas';
+    currentQ = 0;
+    answersS = [];
+    renderDimensionIntro('sintomas');
+  } else if (dim === 'sintomas') {
+    testPhase = 'estrategias';
+    currentQ = 0;
+    answersA = [];
+    renderDimensionIntro('estrategias');
+  } else {
+    showResults();
+  }
+}
+
+// ============================================================
+// CÁLCULO DE RESULTADOS — BAREMO OFICIAL SISCO SV-21
+// Media general: suma de los 21 ítems / 21, transformar a % multiplicando × 20
+// Baremo indicativo: 0-33% Leve | 34-66% Moderado | 67-100% Severo
+// ============================================================
+function showResults() {
+  document.getElementById('progress-bar').style.width = '100%';
+  document.getElementById('progress-label').textContent = '23 / 23 · Completado';
+
+  const allAnswers = [...answersE, ...answersS, ...answersA]; // 21 respuestas
+  const suma = allAnswers.reduce((a, b) => a + b, 0);
+  const media = suma / 21;
+  const pct = Math.round(media * 20); // Fórmula oficial: media × 20
+
+  // Medias por dimensión
+  const mediaE = (answersE.reduce((a,b) => a+b, 0) / 7 * 20).toFixed(0);
+  const mediaS = (answersS.reduce((a,b) => a+b, 0) / 7 * 20).toFixed(0);
+  const mediaA = (answersA.reduce((a,b) => a+b, 0) / 7 * 20).toFixed(0);
+
+  // Baremo indicativo oficial
+  let level, colorClass, emoji, message, tips, badgeColor;
+  if (pct <= 33) {
+    level = "Estrés Leve"; colorClass = "result-low"; emoji = "🌿"; badgeColor = "green";
+    message = "Tu nivel de estrés académico es leve. Tus estrategias de afrontamiento están funcionando bien. Mantén tus hábitos de autocuidado.";
+    tips = [
+      "Mantén una rutina de sueño regular (7–8 horas)",
+      "Practica actividad física al menos 3 veces por semana",
+      "Celebra tus logros académicos, por pequeños que sean",
+      "Continúa usando estrategias de planificación y organización",
+    ];
+  } else if (pct <= 66) {
+    level = "Estrés Moderado"; colorClass = "result-mid"; emoji = "⚡"; badgeColor = "yellow";
+    message = "Tu estrés académico está en un nivel moderado. Es el momento ideal para incorporar técnicas de manejo del estrés antes de que aumente.";
+    tips = [
+      "Practica la técnica de respiración 4-7-8 diariamente",
+      "Usa el temporizador Pomodoro para distribuir el estudio",
+      "Escribe en tu diario de gratitud para equilibrar las emociones",
+      "Habla con un docente o par de confianza sobre tu carga académica",
+    ];
+  } else {
+    level = "Estrés Severo"; colorClass = "result-high"; emoji = "🔔"; badgeColor = "red";
+    message = "Tu nivel de estrés es elevado. Es importante que busques apoyo profesional y uses activamente las herramientas de bienestar disponibles.";
+    tips = [
+      "Solicita orientación en el servicio de Bienestar UTP",
+      "Practica mindfulness y respiración guiada todos los días",
+      "Reorganiza tu agenda con ayuda de un docente o tutor",
+      "Considera hablar con un psicólogo sobre lo que estás viviendo",
+    ];
+  }
+
+  // Color de barras por dimensión
+  const barColor = (p) => parseInt(p) <= 33 ? '#22c55e' : parseInt(p) <= 66 ? '#f59e0b' : '#ef4444';
+
+  const container = document.getElementById('questions-container');
+  container.innerHTML = `
+    <div>
+      <!-- RESULTADO GLOBAL -->
+      <div class="${colorClass} border-2 rounded-3xl p-7 mb-5 text-center">
+        <div class="text-5xl mb-3">${emoji}</div>
+        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Resultado SISCO SV-21</p>
+        <h3 class="font-display text-3xl font-black text-slate-800 mb-1">${level}</h3>
+        <div class="font-display text-5xl font-black text-slate-700 mb-3">${pct}<span class="text-2xl font-semibold">%</span></div>
+        <div class="h-3 bg-white/60 rounded-full overflow-hidden mb-4 max-w-xs mx-auto">
+          <div class="h-3 rounded-full" style="width:${pct}%; background:${barColor(pct)}"></div>
+        </div>
+        <p class="text-slate-600 text-sm leading-relaxed max-w-sm mx-auto">${message}</p>
+      </div>
+
+      <!-- PERFIL POR DIMENSIÓN -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 mb-5">
+        <p class="font-bold text-slate-700 mb-4 flex items-center gap-2 text-sm">
+          <i class="fa-solid fa-chart-bar text-indigo-500"></i> Perfil por dimensión
+        </p>
+        <div class="space-y-4">
+          <!-- Estresores -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-sm font-semibold text-indigo-700 flex items-center gap-1"><i class="fa-solid fa-bolt text-xs"></i> Estresores</span>
+              <span class="text-sm font-bold text-slate-600">${mediaE}%</span>
+            </div>
+            <div class="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-2.5 rounded-full transition-all" style="width:${mediaE}%; background:${barColor(mediaE)}"></div>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">Sobrecarga, exigencia docente, tiempo limitado</p>
+          </div>
+          <!-- Síntomas -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-sm font-semibold text-red-600 flex items-center gap-1"><i class="fa-solid fa-heart-pulse text-xs"></i> Síntomas</span>
+              <span class="text-sm font-bold text-slate-600">${mediaS}%</span>
+            </div>
+            <div class="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-2.5 rounded-full transition-all" style="width:${mediaS}%; background:${barColor(mediaS)}"></div>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">Fatiga, ansiedad, problemas de concentración, irritabilidad</p>
+          </div>
+          <!-- Afrontamiento -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-sm font-semibold text-green-700 flex items-center gap-1"><i class="fa-solid fa-shield-halved text-xs"></i> Afrontamiento</span>
+              <span class="text-sm font-bold text-slate-600">${mediaA}%</span>
+            </div>
+            <div class="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-2.5 rounded-full transition-all" style="width:${mediaA}%; background:${barColor(mediaA)}"></div>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">Uso de estrategias para resolver y manejar el estrés</p>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs text-slate-400">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>En afrontamiento, un puntaje mayor indica mayor uso de estrategias adaptativas.</span>
+        </div>
+      </div>
+
+      <!-- BAREMO DE REFERENCIA -->
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-5">
+        <p class="font-bold text-slate-600 text-xs uppercase tracking-widest mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-ruler text-slate-400"></i> Baremo indicativo SISCO SV-21
+        </p>
+        <div class="grid grid-cols-3 gap-2 text-center text-xs">
+          <div class="bg-green-50 border border-green-200 rounded-xl p-2 ${pct <= 33 ? 'ring-2 ring-green-400' : ''}">
+            <div class="font-bold text-green-700 text-base mb-0.5">0–33%</div>
+            <div class="text-green-600 font-medium">Leve</div>
+          </div>
+          <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-2 ${pct > 33 && pct <= 66 ? 'ring-2 ring-yellow-400' : ''}">
+            <div class="font-bold text-yellow-700 text-base mb-0.5">34–66%</div>
+            <div class="text-yellow-600 font-medium">Moderado</div>
+          </div>
+          <div class="bg-red-50 border border-red-200 rounded-xl p-2 ${pct > 66 ? 'ring-2 ring-red-400' : ''}">
+            <div class="font-bold text-red-700 text-base mb-0.5">67–100%</div>
+            <div class="text-red-600 font-medium">Severo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECOMENDACIONES -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 mb-5">
+        <p class="font-semibold text-slate-700 mb-3 flex items-center gap-2 text-sm">
+          <i class="fa-solid fa-lightbulb text-yellow-500"></i> Recomendaciones personalizadas
+        </p>
+        <ul class="space-y-2">
+          ${tips.map(t => `<li class="flex items-start gap-2 text-sm text-slate-600">
+            <i class="fa-solid fa-check-circle text-green-500 mt-0.5 shrink-0"></i>${t}
+          </li>`).join('')}
+        </ul>
+      </div>
+
+      <!-- INTENSIDAD REPORTADA -->
+      <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 mb-5 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-indigo-200 flex items-center justify-center shrink-0">
+          <span class="font-display font-black text-indigo-700 text-lg">${intensidad}</span>
+        </div>
+        <div>
+          <p class="font-semibold text-indigo-700 text-sm">Intensidad autoevaluada: ${intensidad}/5</p>
+          <p class="text-indigo-500 text-xs">Nivel de estrés subjetivo que reportaste al inicio del test.</p>
+        </div>
+      </div>
+
+      <!-- BOTONES -->
+      <div class="flex gap-3 flex-wrap justify-center">
+        <button onclick="restartTest()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition shadow-md">
+          <i class="fa-solid fa-rotate-right"></i> Repetir test
+        </button>
+        <a href="#recursos" onclick="showToast('Explora los recursos de bienestar 💚','🌿')" class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-xl transition shadow-md">
+          <i class="fa-solid fa-leaf"></i> Ver recursos
+        </a>
+      </div>
+      <p class="text-xs text-slate-400 mt-5 text-center leading-relaxed">
+        Inventario SISCO SV-21 · Barraza Macías (2018) · Segunda versión de 21 ítems validada en México y Perú.<br/>
+        α de Cronbach = .85 · Análisis Factorial: 3 factores, 47% varianza total explicada.<br/>
+        <strong>Este resultado es orientativo. Para diagnóstico clínico, consulta un profesional de salud mental.</strong>
+      </p>
+    </div>
+  `;
+  gainXPSilent(25);
+  showToast('Test SISCO completado! +25 XP 🎉','🏆');
+}
+
+// Sin estrés reportado
+function showResultNoStress() {
+  const container = document.getElementById('questions-container');
+  container.innerHTML = `
+    <div class="text-center py-8">
+      <div class="text-6xl mb-4">🌟</div>
+      <h3 class="font-display text-2xl font-bold text-slate-800 mb-3">¡Sin estrés académico!</h3>
+      <p class="text-slate-500 mb-6 max-w-sm mx-auto">Reportaste no haber tenido momentos de estrés durante este semestre. El Inventario SISCO concluye aquí según su protocolo oficial.</p>
+      <div class="result-low border-2 rounded-2xl p-5 mb-6 max-w-xs mx-auto">
+        <p class="font-bold text-slate-700 mb-1">Nivel de estrés:</p>
+        <p class="font-display text-2xl font-black text-green-700">Ausente / Leve</p>
+        <p class="text-slate-500 text-sm mt-1">0% en el baremo SISCO SV-21</p>
+      </div>
+      <p class="text-sm text-slate-500 mb-6">Continúa practicando el autocuidado y explorando los recursos de bienestar.</p>
+      <button onclick="restartTest()" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition">
+        <i class="fa-solid fa-rotate-right"></i> Volver a tomar el test
+      </button>
+    </div>
+  `;
+  gainXPSilent(10);
+}
+
+// REINICIAR TEST
+function restartTest() {
+  testPhase = 'intro';
+  currentQ = 0; intensidad = 0;
+  answersE = []; answersS = []; answersA = [];
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('progress-label').textContent = '0 / 23';
+  document.getElementById('questions-container').innerHTML = `
+    <div id="intro-card" class="text-center py-8">
+      <div class="w-20 h-20 bg-indigo-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
+        <i class="fa-solid fa-brain text-indigo-500 text-3xl"></i>
+      </div>
+      <h3 class="font-display text-2xl font-bold text-slate-800 mb-3">¿Listo/a para conocerte mejor?</h3>
+      <p class="text-slate-500 mb-2 max-w-md mx-auto">Este inventario consta de <strong>23 ítems</strong> distribuidos en 3 secciones: Estresores, Síntomas y Estrategias de Afrontamiento.</p>
+      <div class="grid grid-cols-3 gap-3 my-5 max-w-sm mx-auto text-xs text-center">
+        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3">
+          <i class="fa-solid fa-bolt text-indigo-500 text-lg mb-1 block"></i>
+          <span class="font-semibold text-indigo-700">7 Estresores</span>
+        </div>
+        <div class="bg-red-50 border border-red-200 rounded-xl p-3">
+          <i class="fa-solid fa-heart-pulse text-red-500 text-lg mb-1 block"></i>
+          <span class="font-semibold text-red-700">7 Síntomas</span>
+        </div>
+        <div class="bg-green-50 border border-green-200 rounded-xl p-3">
+          <i class="fa-solid fa-shield-halved text-green-500 text-lg mb-1 block"></i>
+          <span class="font-semibold text-green-700">7 Estrategias</span>
+        </div>
+      </div>
+      <p class="text-xs text-slate-400 mb-8">Tiempo estimado: 10–15 minutos · Inventario SISCO SV-21 · Barraza Macías (2018)</p>
+      <button onclick="startTest()" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transition text-base">
+        <i class="fa-solid fa-play"></i> Comenzar Test
+      </button>
+    </div>
+  `;
+}
+
+// ============================================================
+// BREATHING
+// ============================================================
+function openBreathing() {
+  document.getElementById('modal-breathing').classList.remove('hidden');
+}
+
+let breathInterval = null;
+let breathPhase = 0; // 0=in,1=hold,2=out
+let breathCycle = 0;
+const breathPhases = [
+  { label: 'Inhala', dur: 4, class: 'breathe-in',   color: '#3b82f6' },
+  { label: 'Retén',  dur: 7, class: 'breathe-hold',  color: '#8b5cf6' },
+  { label: 'Exhala', dur: 8, class: 'breathe-out',   color: '#10b981' },
+];
+
+function startBreathing() {
+  document.getElementById('btn-breath').disabled = true;
+  document.getElementById('btn-breath').textContent = 'En progreso...';
+  breathCycle = 0; breathPhase = 0;
+  runBreathPhase();
+}
+
+function runBreathPhase() {
+  if (breathCycle >= 4) {
+    document.getElementById('breath-label').textContent = '¡Completado! 🌿';
+    document.getElementById('breath-timer-label').textContent = 'Excelente trabajo';
+    document.getElementById('btn-breath').textContent = 'Iniciar de nuevo';
+    document.getElementById('btn-breath').disabled = false;
+    document.getElementById('btn-breath').onclick = startBreathing;
+    gainXPSilent(10);
+    showToast('Respiración completada +10 XP 🌿','💨');
+    return;
+  }
+
+  const phase = breathPhases[breathPhase];
+  const circle = document.getElementById('breath-circle');
+  document.getElementById('breath-label').textContent = phase.label;
+  circle.className = 'absolute w-32 h-32 rounded-full flex items-center justify-center shadow-lg ' + phase.class;
+  circle.style.background = phase.color + '22';
+
+  let t = phase.dur;
+  document.getElementById('breath-timer-label').textContent = `${t}s`;
+  document.getElementById('breath-cycle-num').textContent = breathCycle + 1;
+
+  clearInterval(breathInterval);
+  breathInterval = setInterval(() => {
+    t--;
+    document.getElementById('breath-timer-label').textContent = `${t}s`;
+    if (t <= 0) {
+      clearInterval(breathInterval);
+      breathPhase++;
+      if (breathPhase > 2) { breathPhase = 0; breathCycle++; }
+      runBreathPhase();
+    }
+  }, 1000);
+}
+
+// ============================================================
+// POMODORO
+// ============================================================
+function openPomodoro() {
+  document.getElementById('modal-pomodoro').classList.remove('hidden');
+}
+
+let pomoDuration = 25 * 60;
+let pomoRemaining = pomoDuration;
+let pomoRunning = false;
+let pomoInterval = null;
+let pomoSession = 1;
+let pomoBreak = false;
+const circumference = 2 * Math.PI * 70; // ≈ 439.8
+
+document.getElementById('pomo-ring').style.strokeDasharray = circumference;
+document.getElementById('pomo-ring').style.strokeDashoffset = circumference;
+
+function togglePomodoro() {
+  if (pomoRunning) {
+    pausePomodoro();
+  } else {
+    startPomodoroTimer();
+  }
+}
+
+function startPomodoroTimer() {
+  pomoRunning = true;
+  document.getElementById('btn-pomo-start').innerHTML = '<i class="fa-solid fa-pause mr-1"></i> Pausar';
+  document.getElementById('btn-pomo-start').className = 'flex-1 bg-slate-600 hover:bg-slate-700 text-white font-bold py-3 rounded-xl transition';
+  pomoDuration = pomoBreak ? 5 * 60 : 25 * 60;
+  if (pomoRemaining === pomoDuration) pomoRemaining = pomoDuration;
+
+  clearInterval(pomoInterval);
+  pomoInterval = setInterval(() => {
+    pomoRemaining--;
+    updatePomoDisplay();
+    if (pomoRemaining <= 0) {
+      clearInterval(pomoInterval);
+      pomoRunning = false;
+      if (!pomoBreak) {
+        gainXPSilent(20);
+        showToast(`🍅 ¡Pomodoro ${pomoSession} completado! +20 XP`, '🎯');
+        pomoBreak = true;
+        pomoRemaining = 5 * 60;
+        document.getElementById('pomo-mode-label').textContent = '5 min descanso 😌';
+        document.getElementById('btn-pomo-start').innerHTML = '<i class="fa-solid fa-play mr-1"></i> Descanso';
+        document.getElementById('pomo-ring').style.stroke = '#22c55e';
+      } else {
+        pomoBreak = false;
+        pomoSession++;
+        document.getElementById('pomo-session').textContent = pomoSession;
+        pomoRemaining = 25 * 60;
+        document.getElementById('pomo-mode-label').textContent = '25 min enfoque';
+        document.getElementById('btn-pomo-start').innerHTML = '<i class="fa-solid fa-play mr-1"></i> Iniciar';
+        document.getElementById('btn-pomo-start').className = 'flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition';
+        document.getElementById('pomo-ring').style.stroke = '#ef4444';
+        showToast('¡Descanso terminado! Lista para el siguiente ciclo ☕', '🏁');
+      }
+      pomoRunning = false;
+      updatePomoDisplay();
+    }
+  }, 1000);
+}
+
+function pausePomodoro() {
+  pomoRunning = false;
+  clearInterval(pomoInterval);
+  document.getElementById('btn-pomo-start').innerHTML = '<i class="fa-solid fa-play mr-1"></i> Continuar';
+  document.getElementById('btn-pomo-start').className = 'flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition';
+}
+
+function resetPomodoro() {
+  clearInterval(pomoInterval);
+  pomoRunning = false;
+  pomoBreak = false;
+  pomoRemaining = 25 * 60;
+  pomoDuration = 25 * 60;
+  document.getElementById('pomo-mode-label').textContent = '25 min enfoque';
+  document.getElementById('btn-pomo-start').innerHTML = '<i class="fa-solid fa-play mr-1"></i> Iniciar';
+  document.getElementById('btn-pomo-start').className = 'flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition';
+  document.getElementById('pomo-ring').style.stroke = '#ef4444';
+  updatePomoDisplay();
+}
+
+function updatePomoDisplay() {
+  const m = String(Math.floor(pomoRemaining / 60)).padStart(2, '0');
+  const s = String(pomoRemaining % 60).padStart(2, '0');
+  document.getElementById('pomo-time').textContent = `${m}:${s}`;
+  const pct = pomoRemaining / pomoDuration;
+  const offset = circumference * pct;
+  document.getElementById('pomo-ring').style.strokeDashoffset = offset;
+}
+
+// ============================================================
+// JOURNAL
+// ============================================================
+function openJournal() {
+  const d = new Date();
+  document.getElementById('journal-date').textContent = d.toLocaleDateString('es-PE', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  document.getElementById('modal-journal').classList.remove('hidden');
+}
+
+function saveJournal() {
+  const v1 = document.getElementById('journal-1').value.trim();
+  const v2 = document.getElementById('journal-2').value.trim();
+  const v3 = document.getElementById('journal-3').value.trim();
+  if (!v1 && !v2 && !v3) { showToast('Escribe al menos una entrada 📝','✏️'); return; }
+  closeModal('modal-journal');
+  gainXPSilent(15);
+  showToast('Diario guardado correctamente. +15 XP 📔','💛');
+  document.getElementById('journal-1').value = '';
+  document.getElementById('journal-2').value = '';
+  document.getElementById('journal-3').value = '';
+}
+
+// ============================================================
+// TIPS MODAL
+// ============================================================
+const tipData = {
+  mindfulness: {
+    icon: '🧘', color: 'purple', title: 'Mindfulness – Atención Plena',
+    content: `
+      <p class="text-slate-600 text-sm mb-4">El mindfulness consiste en prestar atención intencional al momento presente, sin juzgar. Estudios demuestran que reduce el estrés académico y mejora el rendimiento cognitivo.</p>
+      <p class="font-semibold text-slate-700 mb-2">Ejercicio básico (5 minutos):</p>
+      <ol class="text-sm text-slate-600 space-y-2 list-decimal pl-4">
+        <li>Siéntate cómodamente con la espalda recta.</li>
+        <li>Cierra los ojos y enfoca tu atención en la respiración.</li>
+        <li>Observa cada inhalación y exhalación sin modificarlas.</li>
+        <li>Cuando tu mente divague, regresa gentilmente a la respiración.</li>
+        <li>Mantén por 5 minutos. Con práctica, extiende a 20.</li>
+      </ol>
+    `
+  },
+  relajacion: {
+    icon: '💪', color: 'teal', title: 'Relajación Muscular Progresiva',
+    content: `
+      <p class="text-slate-600 text-sm mb-4">La técnica de Jacobson consiste en tensar y relajar grupos musculares para liberar la tensión física acumulada por el estrés.</p>
+      <p class="font-semibold text-slate-700 mb-2">Procedimiento (15-20 min):</p>
+      <ol class="text-sm text-slate-600 space-y-2 list-decimal pl-4">
+        <li>Recuéstate o siéntate cómodamente en un lugar tranquilo.</li>
+        <li>Comienza por los pies: tensiona los músculos 5 seg, luego suelta 10 seg.</li>
+        <li>Sube progresivamente: piernas, abdomen, manos, brazos, hombros, cuello, cara.</li>
+        <li>Nota la diferencia entre tensión y relajación en cada grupo.</li>
+        <li>Termina con 3 respiraciones profundas.</li>
+      </ol>
+    `
+  },
+  organizacion: {
+    icon: '📅', color: 'indigo', title: 'Tips de Organización Académica',
+    content: `
+      <p class="text-slate-600 text-sm mb-4">La percepción de falta de control sobre el tiempo es una de las principales fuentes de estrés académico. Estos tips te ayudarán a recuperar el control.</p>
+      <ul class="text-sm text-slate-600 space-y-2">
+        <li class="flex gap-2"><span class="text-indigo-500 font-bold">→</span> <strong>Regla 2 minutos:</strong> si algo tarda menos de 2 min, hazlo ahora.</li>
+        <li class="flex gap-2"><span class="text-indigo-500 font-bold">→</span> <strong>Bloques de estudio:</strong> usa Pomodoro y planifica tus materias en bloques.</li>
+        <li class="flex gap-2"><span class="text-indigo-500 font-bold">→</span> <strong>Lista priorizada:</strong> categoriza tareas por urgencia e importancia (Matriz Eisenhower).</li>
+        <li class="flex gap-2"><span class="text-indigo-500 font-bold">→</span> <strong>Ritual de inicio:</strong> crea una rutina de 5 min antes de estudiar para "entrar en modo".</li>
+        <li class="flex gap-2"><span class="text-indigo-500 font-bold">→</span> <strong>Revisión semanal:</strong> cada domingo, planifica la semana y ajusta objetivos.</li>
+        <li class="flex gap-2"><span class="text-indigo-500 font-bold">→</span> <strong>Sin multitarea:</strong> estudia una materia a la vez con el celular en silencio.</li>
+      </ul>
+    `
+  }
+};
+
+function showTip(type) {
+  const tip = tipData[type];
+  const colorMap = { purple: '#a855f7', teal: '#14b8a6', indigo: '#6366f1' };
+  document.getElementById('tip-content').innerHTML = `
+    <div class="flex items-center gap-3 mb-5">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl" style="background:${colorMap[tip.color]}22">${tip.icon}</div>
+      <h3 class="font-display text-xl font-bold text-slate-800">${tip.title}</h3>
+    </div>
+    ${tip.content}
+    <button onclick="closeModal('modal-tip')" class="mt-6 w-full py-3 rounded-xl text-white font-semibold transition" style="background:${colorMap[tip.color]}">
+      Entendido ✓
+    </button>
+  `;
+  document.getElementById('modal-tip').classList.remove('hidden');
+}
+
+// ============================================================
+// GAMIFICATION / XP
+// ============================================================
+let xp = 125;
+const xpMax = 300;
+function updateXP() {
+  const pct = Math.min((xp / xpMax) * 100, 100);
+  document.getElementById('xp-bar').style.width = pct + '%';
+  document.getElementById('xp-val').textContent = `${xp} / ${xpMax}`;
+}
+function gainXP() {
+  xp = Math.min(xp + 10, xpMax);
+  updateXP();
+  showToast('+10 XP ganados 🏆', '⚡');
+}
+function gainXPSilent(amount) {
+  xp = Math.min(xp + amount, xpMax);
+  updateXP();
+}
+
+// Init
+updateXP();
+
+// ============================================================
+// JOURNAL DATE INIT
+// ============================================================
+const now = new Date();
+const dateStr = now.toLocaleDateString('es-PE', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+const journalDateEl = document.getElementById('journal-date');
+if (journalDateEl) journalDateEl.textContent = dateStr;
+
+// ============================================================
+// POMODORO INIT
+// ============================================================
+updatePomoDisplay();
+</script>
+
+</body>
+</html>
