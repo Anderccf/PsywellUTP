@@ -439,21 +439,21 @@
             </div>
             <div class="mb-4">
               <div class="flex justify-between text-sm text-white/70 mb-2">
-                <span>Puntos XP</span><span id="xp-val">125 / 300</span>
+                <span>Puntos XP</span><span id="xp-val">0 / 300</span>
               </div>
               <div class="h-3 bg-white/20 rounded-full overflow-hidden">
-                <div id="xp-bar" class="h-3 bg-gradient-to-r from-yellow-300 to-mint-300 rounded-full" style="width:42%"></div>
+                <div id="xp-bar" class="h-3 bg-gradient-to-r from-yellow-300 to-mint-300 rounded-full" style="width:0%"></div>
               </div>
             </div>
             <p class="text-white/60 text-sm">175 XP para nivel <strong class="text-white">Guardián del Bienestar</strong></p>
           </div>
           <div class="mt-8 grid grid-cols-2 gap-4 text-center">
             <div class="bg-white/15 rounded-2xl p-4">
-              <p class="font-display text-3xl font-bold text-yellow-300" id="racha">3</p>
+              <p class="font-display text-3xl font-bold text-yellow-300" id="racha">0</p>
               <p class="text-white/70 text-xs mt-1">días de racha 🔥</p>
             </div>
             <div class="bg-white/15 rounded-2xl p-4">
-              <p class="font-display text-3xl font-bold text-mint-300">5</p>
+              <p class="font-display text-3xl font-bold text-mint-300">0</p>
               <p class="text-white/70 text-xs mt-1">logros</p>
             </div>
           </div>
@@ -464,25 +464,23 @@
       <div class="lg:col-span-2 reveal">
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <!-- Badge 1 -->
-          <div class="bg-slate-50 border-2 border-yellow-300 badge-unlocked rounded-2xl p-5 text-center shadow-sm">
-            <div class="text-4xl mb-2">🧘</div>
+<div class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm">            <div class="text-4xl mb-2">🧘</div>
             <p class="font-semibold text-slate-700 text-sm">Primera Respiración</p>
             <p class="text-slate-400 text-xs mt-1">Completaste tu primer ejercicio</p>
             <span class="inline-block mt-2 text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-medium">+10 XP</span>
           </div>
           <!-- Badge 2 -->
-          <div class="bg-slate-50 border-2 border-indigo-300 badge-unlocked rounded-2xl p-5 text-center shadow-sm">
-            <div class="text-4xl mb-2">📝</div>
+<div class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm">            <div class="text-4xl mb-2">📝</div>
             <p class="font-semibold text-slate-700 text-sm">Gratitud Diaria</p>
             <p class="text-slate-400 text-xs mt-1">Escribiste en tu diario</p>
             <span class="inline-block mt-2 text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-medium">+15 XP</span>
           </div>
           <!-- Badge 3 -->
-          <div class="bg-slate-50 border-2 border-mint-400 badge-unlocked rounded-2xl p-5 text-center shadow-sm">
+          <div class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm">
             <div class="text-4xl mb-2">🧪</div>
             <p class="font-semibold text-slate-700 text-sm">Test Completado</p>
             <p class="text-slate-400 text-xs mt-1">Hiciste el test SISCO</p>
-            <span class="inline-block mt-2 text-xs bg-mint-100 text-mint-700 px-2 py-0.5 rounded-full font-medium">+25 XP</span>
+            <span class="inline-block mt-2 text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">🔒 Bloqueado</span>
           </div>
           <!-- Badge 4 - locked -->
           <div class="bg-slate-50 border-2 border-slate-200 badge-locked rounded-2xl p-5 text-center shadow-sm">
@@ -1555,7 +1553,7 @@ function showTip(type) {
 // ============================================================
 // GAMIFICATION / XP
 // ============================================================
-let xp = 125;
+let xp = 0;
 const xpMax = 300;
 function updateXP() {
   const pct = Math.min((xp / xpMax) * 100, 100);
